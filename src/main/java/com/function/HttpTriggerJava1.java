@@ -13,22 +13,19 @@ public class HttpTriggerJava1 {
      * 1. curl -d "HTTP Body" {your host}/api/HttpTriggerJava1
      * 2. curl {your host}/api/HttpTriggerJava1?name=HTTP%20Query
      */
-    @FunctionName("HttpTriggerJava1")
-    public HttpResponseMessage run(
-            @HttpTrigger(name = "req", methods = {HttpMethod.GET, HttpMethod.POST}, authLevel = AuthorizationLevel.ANONYMOUS) HttpRequestMessage<Optional<String>> request,
-            final ExecutionContext context) {
-        context.getLogger().info("Java HTTP trigger processed a request.");
+   @FunctionName("HttpTriggerJava1")
+public HttpResponseMessage run(
+        @HttpTrigger(name = "req", methods = {HttpMethod.GET, HttpMethod.POST}, authLevel = AuthorizationLevel.ANONYMOUS)
+        HttpRequestMessage<Optional<String>> request,
+        final ExecutionContext context) {
 
-        // Parse query parameter
-        String query = request.getQueryParameters().get("name");
-            context.getLogger().info("Query param: " + query);
+    context.getLogger().info("Java HTTP trigger processed a request.");
 
-        String name = request.getBody().orElse(query);        
+    // Log the raw body for debugging webhook data
+    String body = request.getBody().orElse("No body received");
+    context.getLogger().info("Webhook Payload Body: " + body);
 
-        if (name == null) {
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Please pass a name on the query string or in the request body").build();
-        } else {
-            return request.createResponseBuilder(HttpStatus.OK).body("Hello, " + name).build();
-        }
-    }
+    return request.createResponseBuilder(HttpStatus.OK).body("Webhook received!").build();
+}
+
 }
